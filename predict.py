@@ -3,6 +3,7 @@ import os.path
 import cv2
 import numpy as np
 from scipy.misc import imresize
+import time
 
 from keras.models import Sequential
 from keras.models import model_from_json
@@ -31,6 +32,10 @@ if __name__ == '__main__':
     img_dir = sys.argv[1]
     if not os.path.exists('output'):
         os.mkdir('output')
+    if not os.path.exists('output/cats'):
+        os.mkdir('output/cats')
+    if not os.path.exists('output/dogs'):
+        os.mkdir('output/dogs')
     filename, file_extension = os.path.splitext(img_dir)
     frame_count = 1
     if file_extension.__eq__('.mp4'):
@@ -46,6 +51,17 @@ if __name__ == '__main__':
                 print('It is a ' + Y + ' !')
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     break
+                # save compressed images in cats and dogs folders:
+                try:
+                    if Y.__eq__('cat'):
+                        cv2.VideoWriter('output/cats/video_frame' + str(frame_count) + '.png',
+                                    frame, [cv2.IMWRITE_PNG_COMPRESSION, 9])
+                    else:
+                        cv2.imwrite('output/dogs/video_frame' + str(frame_count) + '.png',
+                                    frame, [cv2.IMWRITE_PNG_COMPRESSION, 9])
+                except:
+                    cv2.imwrite('output/dogs/video_frame' + str(frame_count) + '.jpg', frame)
+                time.sleep(10)
             except:
                 print('frame ' + str(frame_count) + 'was not readable')
                 break
